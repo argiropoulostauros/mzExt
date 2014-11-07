@@ -18,7 +18,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
     groupCls: Ext.baseCSSPrefix + 'grid-group-hd',
     firstGroupCls: Ext.baseCSSPrefix + 'grid-group-hd-first',
     eventSelector: '.' + Ext.baseCSSPrefix + 'grid-group-hd',
-    
+
     refreshData: {},
     groupInfo: {},
     wrapsItem: true,
@@ -65,13 +65,13 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
      * @cfg {String/Array/Ext.Template} groupHeaderTpl
      * Define here a template to be used for each grouping level.
      * A string Template snippet, an array of strings (optionally followed by an object containing Template methods) to be used to construct a Template, or a Template instance.
-     * 
+     *
      * - Example 1 (Template snippet):
-     * 
+     *
      *       groupHeaderTpl: 'Group: {name}'
-     *     
+     *
      * - Example 2 (Array):
-     * 
+     *
      *       groupHeaderTpl: [
      *           'Group: ',
      *           '<div>{name:this.formatName}</div>',
@@ -81,9 +81,9 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
      *               }
      *           }
      *       ]
-     *     
+     *
      * - Example 3 (Template Instance):
-     * 
+     *
      *       groupHeaderTpl: Ext.create('Ext.XTemplate',
      *           'Group: ',
      *           '<div>{name:this.formatName}</div>',
@@ -118,7 +118,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
     groupDirtyCls: Ext.baseCSSPrefix + 'grid-group-dirty',
 
     //<locale>
-    
+
     /**
      * @cfg {String} [groupByText="Group by this field"]
      * Text displayed in the grid header menu for grouping by header.
@@ -178,7 +178,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
      * @cfg {Boolean} [collapsible=true]
      * Set to `false` to disable collapsing groups from the UI.
      *
-     * This is set to `false` when the associated {@link Ext.data.Store store} is 
+     * This is set to `false` when the associated {@link Ext.data.Store store} is
      * {@link Ext.data.Store#buffered buffered}.
      */
     collapsible: true,
@@ -192,19 +192,19 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
     //</locale>
 
     showSummaryRow: false,
-    
+
     /**
     * Position of the summary row. Possible values:
     *  - outside: aligns with the group header and is visible when group is collapsed
     *  - inside: aligns with the group rows and is not visible when group is collapsed
     *  - hide: hides the group footer; this is the same as showSummaryRow: false
-    *  
+    *
     * @type String
     */
     summaryRowPosition: 'outside',
-    
+
     expandFirstGroupHierarchy: true,
-    
+
     tableTpl: {
         before: function (values) {
             // Do not process summary records
@@ -226,10 +226,10 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
     groupTpl: [
         '{%',
             'var me = this.groupingFeature;\n',
-            'me.setupRowData(values.record, values.recordIndex, values);\n',
+            'me.setupRowData(values.record, values.rowIndex, values);\n',
 //            'debugger;\n',
             //'values.needsWrap = values.isFirstRow || (values.summaryRecords.length > 0);\n',
-            'values.recordIndex += me.skippedRows;\n',
+            'values.rowIndex += me.skippedRows;\n',
             'values.isCollapsedGroup = me.isLastGroupCollapsed(values);\n',
             'values.hasSummary = values.summaryRecords.length > 0;\n',
 			'var locked = me.gridLocked;\n',
@@ -237,7 +237,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
 			'var useIndent = grid.lockable ? locked : true;\n',
         '%}',
         '<tpl if="hasGroups">',
-            '<tr data-boundView="{view.id}" data-recordId="{record.internalId}" data-recordIndex="{[values.isCollapsedGroup ? -1 : values.recordIndex]}" class="{[values.itemClasses.join(" ")]} ' + Ext.baseCSSPrefix + 'grid-wrap-row">',
+            '<tr data-boundView="{view.id}" data-recordId="{record.internalId}" data-rowIndex="{[values.isCollapsedGroup ? -1 : values.rowIndex]}" class="{[values.itemClasses.join(" ")]} ' + Ext.baseCSSPrefix + 'grid-wrap-row">',
                 '<td class="' + Ext.baseCSSPrefix + 'group-hd-container" colspan="{columns.length}">',
                     '<tpl if="isFirstRow">',
                         '{%',
@@ -297,7 +297,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
                         'if(xindex > 1) { parent.showMySummary = true; } \n',
                     '%}',
                     '<tpl if="parent.showMySummary">',
-                        '<tr data-boundView="{parent.view.id}" data-recordId="{parent.record.internalId}" data-recordIndex="-1" class="{[parent.itemClasses.join(" ")]}">',
+                        '<tr data-boundView="{parent.view.id}" data-recordId="{parent.record.internalId}" data-rowIndex="-1" class="{[parent.itemClasses.join(" ")]}">',
                             '<td>',
                                 '<table class="{[cssClass]}" border="0" cellspacing="0" cellpadding="0" style="margin-left:{[lastDepth]}px; width:100%;">',
                                     '{[me.renderColumnSizer(out, lastDepth+1)]}',
@@ -395,22 +395,22 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
         me.mixins.summary.init.call(me);
 
         me.callParent(arguments);
-        
+
         if(store.remoteFilter === true || store.remoteSort === true || store.remoteGroup === true){
             Ext.warn('Store is not properly configured!');
             store.pageSize = 1000000;
             store.remoteFilter = store.remoteSort = store.remoteGroup = false;
         }
-        
+
         view.groupingFeature = me;
-        
+
         view.headerCt.on({
             columnhide: me.onColumnHideShow,
             columnshow: me.onColumnHideShow,
             columnmove: me.onColumnMove,
             scope: me
         });
-        
+
         // Add a table level processor
         view.addTableTpl(me.tableTpl).groupingFeature = me;
 
@@ -433,7 +433,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
             reconfigure: me.onReconfigure,
             scope: me
         });
-        
+
         // we have to create an interceptor for view.onDataRefresh to cancel the refresh event for the view
         // if ExtJS will change this in the future, this approach will not work.
         view.onDataRefresh = Ext.Function.createInterceptor(view.onDataRefresh, function(store){
@@ -442,13 +442,13 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
                 return false;
             }
         });
-        
+
         view.on({
             afterrender: me.afterViewRender,
             scope: me,
             single: true
         });
-        
+
         me.grid.getSelectionModel().on({
             selectionchange: me.onSelectionChange,
             scope: me
@@ -460,9 +460,9 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
             remove: me.onChangeColumns,
             scope: me
         });
-        
+
     },
-    
+
     vetoEvent: function (record, row, rowIndex, e) {
         // Do not veto mouseover/mouseout
         if (e.type !== 'mouseover' && e.type !== 'mouseout' && e.type !== 'mouseenter' && e.type !== 'mouseleave' && e.getTarget(this.eventSelector)) {
@@ -528,12 +528,12 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
             }
         }
     },
-    
+
     renderColumnSizer: function(out, indent) {
         var columns = this.view.getGridColumns(),
             len = columns.length, i,
             column, width, margin = '';
-        
+
 		var locked = !this.view.lockingPartner || (this.view.ownerCt === this.view.ownerCt.ownerLockable.lockedGrid) || (this.view.lockingPartner.headerCt.getVisibleGridColumns().length === 0);
         for (i = 0; i < len; i++) {
             column = columns[i];
@@ -547,14 +547,14 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
     },
 
     getColumnsSettings: function(columns){
-        var me = this, 
+        var me = this,
             columnsSettings = {};
-            
+
         Ext.Array.each(columns, function(col, index, all){
             col.groupHeaderTpl = col.groupHeaderTpl || me.groupHeaderTpl;
             columnsSettings[col.displayField || col.dataIndex] = col;
         });
-        
+
         return columnsSettings;
     },
 
@@ -580,7 +580,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
         me.onGroupChange();
         me.unblock();
     },
-    
+
     onGroupContextMenu: function(){
         // a group context menu might be usefull here.
         //debugger;
@@ -672,7 +672,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
             groupToggleMenuItem.setChecked(isGrouped, true);
             groupToggleMenuItem[isGrouped ? 'enable' : 'disable']();
         }
-        
+
         groupMenuMeth = (header.groupable === false || this.view.headerCt.getVisibleGridColumns().length < 2 || groupers.getByKey(header.dataIndex) ) ? 'disable' : 'enable';
         addGroupMenuItem[groupMenuMeth]();
 
@@ -774,7 +774,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
         me.unblock();
         me.refreshIf();
     },
-    
+
 
     /**
      * Group by the header the user has clicked on.
@@ -977,7 +977,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
             });
             doStuff = true;
         }
-        
+
         if(doStuff){
             header = Ext.get(me.getHeaderNode(groupId));
             if(me.groupCache[groupId]){
@@ -992,14 +992,14 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
 
             /*
             // this is actually doing an updateLayout on all visible components
-            Ext.resumeLayouts(true); 
+            Ext.resumeLayouts(true);
             Ext.resumeLayouts();
             // update only this grid and the locking partner if available
-            view.updateLayout(); 
+            view.updateLayout();
             if(view.lockingPartner){
                 view.lockingPartner.updateLayout();
             }*/
-            
+
             if (focus) {
                 header.up(view.getItemSelector()).scrollIntoView(view.el, null, true);
             }
@@ -1056,7 +1056,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
     onGroupKey: function (keyCode, event) {
         var me = this,
             groupName = me.getGroupId(event.target);
-        
+
         if (groupName) {
             me.onGroupClick(me.view, event.target, groupName, event);
         }
@@ -1122,12 +1122,12 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
 			groupField, groupHeaderTpl,
             parentGrid = me.gridMaster,
             columns;
-            
+
         rowValues.isCollapsedGroup = false;
         rowValues.summaryRecords = [];
         groupInfo = [];
         summaryRecords = new Ext.util.MixedCollection();
-        
+
         colSettings = me.columnsSettings;
 
         if (data.doGrouping) {
@@ -1279,7 +1279,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
             // calculate the summary data
             data.summaryData = me.generateSummaryData();
         }
-        
+
         // let's cache this here before the template is rendered
         rowValues.hasGroups = rowValues.view.store.groupers ? rowValues.view.store.groupers.getCount() > 0 : false;
         me.gridLocked = !rowValues.view.lockingPartner || (rowValues.view.ownerCt === rowValues.view.ownerCt.ownerLockable.lockedGrid) || (rowValues.view.lockingPartner.headerCt.getVisibleGridColumns().length === 0);
@@ -1312,7 +1312,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
         targetEl = Ext.fly(element).findParent(eventSelector);
 
         if (!targetEl) {
-            // Otherwise, navigate up to the row and look down to see if we can find it    
+            // Otherwise, navigate up to the row and look down to see if we can find it
             row = Ext.fly(element).findParent(view.itemSelector);
             if (row) {
                 targetEl = row.down(eventSelector, true);
@@ -1386,7 +1386,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
 
         groupers.each(function (item, index, len) {
             var groupField, header, selector;
-            
+
             groupField = item.property;
             selector = '[dataIndex=' + groupField + ']';
             header = headerCt.down(selector);
@@ -1394,7 +1394,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
             if (!header && partner) {
                 header = partner.view.headerCt.down(selector);
             }
-            
+
             // if we still don't find the header let's try with the displayField. it might be a picker column
             if(!header){
                 selector = '[displayField=' + groupField + ']';
@@ -1404,7 +1404,7 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
                     header = partner.view.headerCt.down(selector);
                 }
             }
-            
+
             if(header){
                 headers.push(header);
             }
@@ -1434,10 +1434,10 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
 
     onBeforeReconfigure: function (grid, store, columns, oldStore, oldColumns) {
         var me = this;
-        
+
         me.dataSource.beforeReconfigure(store, oldStore);
     },
-    
+
     onReconfigure: function (grid, store, columns, oldStore, oldColumns) {
         var me = this;
 
@@ -1446,16 +1446,16 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
             if (store.buffered !== oldStore.buffered) {
                 Ext.Error.raise('Cannot reconfigure grouping switching between buffered and non-buffered stores');
             }
-            
+
             me.dataSource.reconfigure(store, true);
         }
     },
-    
+
     // if the selected records are in collapsed groups then expand the tree structures
     onSelectionChange: function(sm, selected, eOpts){
         // implement a method in the MultiGroupStore to check if the record is in a collapsed group
         var me = this, key;
-        
+
         if(selected.length == 1){
             if(sm instanceof Ext.selection.RowModel){
                 key = me.getGroupKey(selected[0]);
@@ -1467,6 +1467,6 @@ Ext.define('Ext.ux.grid.feature.MultiGrouping', {
             }
         }
     }
-    
+
 
 });
